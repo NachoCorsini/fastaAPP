@@ -1,0 +1,19 @@
+{
+    "name": "fastaApp",
+    "short_name": "fastaApp",
+    "description": "Consulta y gestión de inasistencias",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#e50914",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "./assetts/logo fasta.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+      
+    ]
+  }
+  
