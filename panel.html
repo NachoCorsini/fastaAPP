@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>fastaApp - Control de Inasistencias</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <!-- Script principal -->
+  <script defer src="panel.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      padding: 30px;
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    h1 {
+      color: #e50914;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    select {
+      margin-bottom: 25px;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      width: 280px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    }
+
+    table {
+      width: 95vw;
+      margin-top: 20px;
+      margin-bottom: 40px;
+      border-collapse: collapse;
+      background-color: #1f1f1f;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 15px;
+      overflow: hidden;
+    }
+
+    table thead tr:first-child th:first-child {
+      border-top-left-radius: 16px;
+    }
+    table thead tr:first-child th:last-child {
+      border-top-right-radius: 16px;
+    }
+
+    table tbody tr:last-child td:first-child {
+      border-bottom-left-radius: 16px;
+    }
+    table tbody tr:last-child td:last-child {
+      border-bottom-right-radius: 16px;
+    }
+
+    th, td {
+      padding: 12px;
+      line-height: 1.4;
+    }
+
+    th {
+      background: #2c2c2c;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    td:last-child {
+      text-align: center;
+      width: 150px;
+    }
+
+    .acciones {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 6px;
+      padding: 4px;
+      font-size: 18px;
+      transition: transform 0.2s ease;
+    }
+
+    button:hover {
+      transform: scale(1.2);
+    }
+
+    .btn-verde {
+      color: #4caf50;
+    }
+
+    .btn-naranja {
+      color: #ff9800;
+    }
+
+    .btn-azul {
+      color: #2196f3;
+    }
+
+    #preceptorInfo {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    #preceptorInfo span {
+      display: block;
+    }
+
+    #preceptorLabel {
+      font-size: 16px;
+      font-weight: normal;
+      color: #222;
+    }
+
+    #preceptorNombre {
+      font-size: 22px;
+      color: #e50914;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .top-buttons div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .top-buttons i {
+      font-size: 24px;
+      transition: transform 0.2s ease;
+    }
+
+    .top-buttons i:hover {
+      transform: scale(1.2);
+    }
+
+    @media (max-width: 768px) {
+      select {
+        width: 100%;
+      }
+
+      table {
+        font-size: 13px;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      td:last-child {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      button {
+        font-size: 16px;
+      }
+
+      h1 {
+        font-size: 24px;
+        text-align: center;
+      }
+
+      .top-buttons {
+        right: 10px;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-buttons">
+    <div onclick="irACargadorListas()">
+      <i class="fas fa-arrow-up"></i>
+      <div>Cargar listas</div>
+    </div>
+    <div onclick="irAConsulta()">
+      <i class="fas fa-database"></i>
+      <div>Gestión alumnos</div>
+    </div>
+    <div onclick="cerrarSesion()">
+      <i class="fas fa-power-off"></i>
+      <div>Salir</div>
+    </div>
+  </div>
+
+  <div id="preceptorInfo">
+    <span id="preceptorLabel">Preceptor/a:</span>
+    <span id="preceptorNombre"></span>
+  </div>
+
+  <h1></h1>
+
+  <label for="curso">Seleccioná un curso:</label>
+  <select id="curso" onchange="cargarListaCurso(this.value)">
+    <option disabled selected>Seleccionar curso</option>
+    <option>1er AÑO A</option>
+    <option>1er AÑO B</option>
+    <option>2do AÑO A</option>
+    <option>2do AÑO B</option>
+    <option>3er AÑO A</option>
+    <option>3er AÑO B</option>
+    <option>4to AÑO A</option>
+    <option>4to AÑO B</option>
+    <option>5to AÑO A</option>
+    <option>5to AÑO B</option>
+    <option>6to AÑO A</option>
+    <option>6to AÑO B</option>
+  </select>
+
+  <table id="alumnosTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>DNI</th>
+        <th>Nombre</th>
+        <th style="text-align:center;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    function cerrarSesion() {
+      const blackout = document.createElement("div");
+      blackout.style.position = "fixed";
+      blackout.style.top = 0;
+      blackout.style.left = 0;
+      blackout.style.width = "100vw";
+      blackout.style.height = "100vh";
+      blackout.style.background = "black";
+      blackout.style.zIndex = 9999;
+      blackout.style.transition = "opacity 0.8s ease-out";
+      blackout.style.opacity = 0;
+      document.body.appendChild(blackout);
+      requestAnimationFrame(() => {
+        blackout.style.opacity = 1;
+      });
+      setTimeout(() => {
+        localStorage.removeItem("preceptor");
+        window.location.href = "index.html";
+      }, 1000);
+    }
+
+    function irAConsulta() {
+      window.location.href = "consulta.html";
+    }
+
+    function irACargadorListas() {
+      window.location.href = "cargadorListas.html";
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const preceptor = localStorage.getItem("preceptor");
+      if (preceptor) {
+        document.getElementById("preceptorNombre").innerText = preceptor;
+      }
+    });
+  </script>
+
+</body>
+</html>

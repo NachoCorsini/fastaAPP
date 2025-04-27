@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>fastaApp</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      background: #ffffff;
+      margin-top: 80px;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      width: 95%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #e50914;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      padding: 12px;
+      font-size: 15px;
+      width: 260px;
+      margin: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    }
+
+    button {
+      padding: 12px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      background-color: #e50914;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #ff3d47a1;
+    }
+
+    #resultado {
+      margin-top: 30px;
+      text-align: left;
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.08);
+      max-width: 700px;
+      width: 90%;
+    }
+
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .top-buttons div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .top-buttons i {
+      font-size: 24px;
+      transition: transform 0.2s ease;
+    }
+
+    .top-buttons i:hover {
+      transform: scale(1.2);
+    }
+
+    .top-left {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-left">
+  <div onclick="accesoPreceptores()" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+    <i class="fas fa-user-shield" style="font-size: 24px;"></i>
+    <div style="font-size: 12px;">Preceptores</div>
+  </div>
+</div>
+  </div>
+
+  <div class="top-buttons">
+    <div onclick="refrescarBusqueda()">
+      <i class="fas fa-rotate-right"></i>
+      <div>Actualizar</div>
+    </div>
+    <div onclick="cerrarSesion()">
+      <i class="fas fa-power-off"></i>
+      <div>Salir</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Consulta de Inasistencias</h1>
+
+    <input type="text" id="dni" placeholder="Ingresá el DNI del alumno" />
+    <br>
+    <select id="curso">
+      <option disabled selected>Seleccionar curso</option>
+      <option>1er AÑO A</option>
+      <option>1er AÑO B</option>
+      <option>2do AÑO A</option>
+      <option>2do AÑO B</option>
+      <option>3er AÑO A</option>
+      <option>3er AÑO B</option>
+      <option>4to AÑO A</option>
+      <option>4to AÑO B</option>
+      <option>5to AÑO A</option>
+      <option>5to AÑO B</option>
+      <option>6to AÑO A</option>
+      <option>6to AÑO B</option>
+    </select>
+    <br>
+    <button onclick="consultarInasistencias()">Consultar</button>
+  </div>
+
+  <div id="resultado"></div>
+
+  <script>
+    function formatearFecha(fechaISO) {
+      const [año, mes, dia] = fechaISO.split("-");
+      return `${dia}/${mes}/${año}`;
+    }
+
+    function consultarInasistencias() {
+      const dni = document.getElementById("dni").value.trim();
+      const curso = document.getElementById("curso").value;
+      const resultadoDiv = document.getElementById("resultado");
+
+      if (!dni || !curso) {
+        resultadoDiv.innerHTML = `<p style="color:red;">Completá todos los campos</p>`;
+        return;
+      }
+
+      resultadoDiv.innerHTML = "<p>Buscando datos...</p>";
+
+      db.collection("cursos").doc(curso).get().then(doc => {
+        if (!doc.exists) {
+          resultadoDiv.innerHTML = `<p style="color:red;">Curso no encontrado</p>`;
+          return;
+        }
+
+        const alumnos = doc.data().alumnos || {};
+        const nombreCompleto = alumnos[dni];
+
+        if (!nombreCompleto) {
+          resultadoDiv.innerHTML = `<p>No se encontró un alumno con ese DNI en ${curso}</p>`;
+          return;
+        }
+
+        db.collection("inasistencias").doc(curso).collection(dni).get()
+          .then(snapshot => {
+            if (snapshot.empty) {
+              resultadoDiv.innerHTML = `<p>${nombreCompleto} no tiene inasistencias registradas en ${curso}.</p>`;
+              return;
+            }
+
+            let html = `<strong>Inasistencias de ${nombreCompleto} (${curso}):</strong><br>`;
+            snapshot.forEach(doc => {
+              const data = doc.data();
+              html += `<p>${formatearFecha(data.fecha)} - ${data.contraturno}</p>`;
+            });
+
+            resultadoDiv.innerHTML = html;
+          })
+          .catch((err) => {
+            console.error(err);
+            resultadoDiv.innerHTML = `<p style="color:red;">Error consultando Firestore</p>`;
+          });
+      });
+    }
+
+    function refrescarBusqueda() {
+      document.getElementById("dni").value = "";
+      document.getElementById("curso").selectedIndex = 0;
+      document.getElementById("resultado").innerHTML = "";
+    }
+
+    function cerrarSesion() {
+      const blackout = document.createElement("div");
+      blackout.style.position = "fixed";
+      blackout.style.top = 0;
+      blackout.style.left = 0;
+      blackout.style.width = "100vw";
+      blackout.style.height = "100vh";
+      blackout.style.background = "black";
+      blackout.style.zIndex = 9999;
+      blackout.style.transition = "opacity 0.8s ease-out";
+      blackout.style.opacity = 0;
+      document.body.appendChild(blackout);
+      requestAnimationFrame(() => {
+        blackout.style.opacity = 1;
+      });
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1000);
+    }
+
+    function accesoPreceptores() {
+      Swal.fire({
+        title: 'Acceso Preceptores',
+        input: 'password',
+        inputLabel: 'Ingresá la clave',
+        inputPlaceholder: 'Contraseña secreta',
+        showCancelButton: true,
+        confirmButtonText: 'Ingresar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: (clave) => {
+          if (clave !== "*preceptores*") {
+            Swal.showValidationMessage('Clave incorrecta');
+            return false;
+          }
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "index.html";
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

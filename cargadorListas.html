@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>fastaApp - Cargar Listas</title>
+
+  <!-- Librerías -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="firebase.js"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h2 {
+      color: #e50914;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+      text-align: left;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    }
+
+    button {
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: #ff3d47a1;
+    }
+
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .top-buttons div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .top-buttons i {
+      font-size: 24px;
+      transition: transform 0.2s ease;
+    }
+
+    .top-buttons i:hover {
+      transform: scale(1.2);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .top-buttons {
+        right: 10px;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-buttons">
+    <div onclick="irAGestionAlumnos()">
+      <i class="fas fa-database"></i>
+      <div>Gestión alumnos</div>
+    </div>
+    <div onclick="cerrarSesion()">
+      <i class="fas fa-power-off"></i>
+      <div>Salir</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Cargar Lista de Alumnos</h2>
+
+    <label for="curso">Curso (ej: 1er AÑO A):</label>
+    <input type="text" id="curso" placeholder="Ej: 1er AÑO A" />
+
+    <label for="archivoExcel">Seleccionar archivo Excel:</label>
+    <input type="file" id="archivoExcel" accept=".xls,.xlsx" />
+
+    <button onclick="subirLista()">Subir Lista</button>
+
+    <div id="estado"></div>
+  </div>
+
+  <script>
+    function subirLista() {
+      const curso = document.getElementById("curso").value.trim();
+      const archivo = document.getElementById("archivoExcel").files[0];
+      const estado = document.getElementById("estado");
+
+      if (!curso || !archivo) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Campos incompletos',
+          text: 'Completá el curso y seleccioná un archivo Excel.'
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        const alumnosPorDni = {};
+
+        for (let i = 1; i < rows.length; i++) {
+          const fila = rows[i];
+          const nombre = fila[0]?.toString().trim();
+          const dni = fila[1]?.toString().trim();
+
+          if (nombre && dni) {
+            alumnosPorDni[dni] = nombre.replace(/,\s*$/, ""); // Quitar coma final
+          }
+        }
+
+        db.collection("cursos").doc(curso).set({ alumnos: alumnosPorDni })
+          .then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Lista cargada!',
+              text: `La lista del curso ${curso} se subió correctamente.`,
+              confirmButtonText: 'OK'
+            }).then(() => {
+              // Limpiar todo después de subir
+              document.getElementById("curso").value = "";
+              document.getElementById("archivoExcel").value = "";
+              estado.innerHTML = "";
+            });
+          })
+          .catch(err => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al subir la lista.'
+            });
+          });
+      };
+
+      reader.readAsArrayBuffer(archivo);
+    }
+
+    function irAGestionAlumnos() {
+      window.location.href = "panel.html";
+    }
+
+    function cerrarSesion() {
+      const blackout = document.createElement("div");
+      blackout.style.position = "fixed";
+      blackout.style.top = 0;
+      blackout.style.left = 0;
+      blackout.style.width = "100vw";
+      blackout.style.height = "100vh";
+      blackout.style.background = "black";
+      blackout.style.zIndex = 9999;
+      blackout.style.transition = "opacity 0.8s ease-out";
+      blackout.style.opacity = 0;
+      document.body.appendChild(blackout);
+      requestAnimationFrame(() => {
+        blackout.style.opacity = 1;
+      });
+      setTimeout(() => {
+        localStorage.removeItem("preceptor");
+        window.location.href = "index.html";
+      }, 1000);
+    }
+  </script>
+
+</body>
+</html>
