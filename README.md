@@ -1,5 +1,7 @@
-InasistApp 🚀
-InasistApp es una aplicación web diseñada para la gestión y consulta de inasistencias en nivel secundario.
+fastaApp 🚀
+
+
+fastaApp es una aplicación web diseñada para la gestión y consulta de inasistencias en nivel secundario.
 Permite a preceptores cargar, editar y eliminar inasistencias, y a alumnos o familiares consultar de manera simple sus faltas a contraturnos.
 
 📋 Funcionalidades principales
