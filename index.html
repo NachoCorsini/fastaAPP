@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="manifest" href="manifest.json" />
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log('Service Worker registrado ✅'))
-      .catch(err => console.log('Error registrando Service Worker ❌', err));
-  }
-</script>
-
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>fastaApp</title>
+  <link rel="manifest" href="manifest.json" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script defer src="index.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service Worker registrado ✅'))
+        .catch(err => console.log('Error registrando Service Worker ❌', err));
+    }
+  </script>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: "Segoe UI", sans-serif;
@@ -23,13 +29,15 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      padding: 20px;
     }
 
     .login-box {
       background-color: rgba(0, 0, 0, 0.85);
-      padding: 40px 30px;
+      padding: 30px 20px;
       border-radius: 12px;
-      width: 320px;
+      width: 100%;
+      max-width: 350px;
       text-align: center;
       color: white;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -58,7 +66,8 @@
       display: block;
       margin: 10px auto;
       padding: 10px;
-      width: 250px;
+      width: 90%;
+      max-width: 260px;
       font-size: 14px;
       border: none;
       border-bottom: 1px solid white;
@@ -108,6 +117,13 @@
 
     .consulta-link a button:hover {
       background-color: #f3c7c7;
+    }
+
+    @media (max-height: 600px) {
+      body {
+        align-items: flex-start;
+        padding-top: 40px;
+      }
     }
   </style>
 </head>

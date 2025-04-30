@@ -17,46 +17,47 @@
   <script defer src="panel.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       font-family: "Segoe UI", sans-serif;
-      padding: 30px;
+      padding: 20px;
+      margin: 0;
       background: linear-gradient(145deg, #ffffff, #e6e6e6);
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
     }
 
     h1 {
       color: #e50914;
-      font-size: 28px;
-      margin-bottom: 20px;
+      font-size: 26px;
+      margin-top: 20px;
+      margin-bottom: 10px;
     }
 
     label {
       font-weight: 600;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       display: block;
+      text-align: center;
     }
 
     select {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       padding: 12px;
       font-size: 15px;
       border-radius: 10px;
       border: 1px solid #ccc;
-      width: 280px;
+      width: 100%;
+      max-width: 280px;
       box-shadow: 0 0 6px rgba(0,0,0,0.05);
     }
 
     table {
-      width: 95vw;
+      width: 100%;
+      max-width: 1000px;
       margin-top: 20px;
-      margin-bottom: 40px;
       border-collapse: collapse;
       background-color: #1f1f1f;
       border-radius: 16px;
@@ -64,20 +65,6 @@
       color: white;
       font-size: 15px;
       overflow: hidden;
-    }
-
-    table thead tr:first-child th:first-child {
-      border-top-left-radius: 16px;
-    }
-    table thead tr:first-child th:last-child {
-      border-top-right-radius: 16px;
-    }
-
-    table tbody tr:last-child td:first-child {
-      border-bottom-left-radius: 16px;
-    }
-    table tbody tr:last-child td:last-child {
-      border-bottom-right-radius: 16px;
     }
 
     th, td {
@@ -116,36 +103,22 @@
       transform: scale(1.2);
     }
 
-    .btn-verde {
-      color: #4caf50;
-    }
-
-    .btn-naranja {
-      color: #ff9800;
-    }
-
-    .btn-azul {
-      color: #2196f3;
-    }
+    .btn-verde { color: #4caf50; }
+    .btn-naranja { color: #ff9800; }
+    .btn-azul { color: #2196f3; }
 
     #preceptorInfo {
-      margin-bottom: 20px;
-      font-size: 18px;
-      color: #333;
-    }
-
-    #preceptorInfo span {
-      display: block;
+      margin-bottom: 15px;
+      text-align: center;
     }
 
     #preceptorLabel {
-      font-size: 16px;
-      font-weight: normal;
-      color: #222;
+      font-size: 15px;
+      color: #333;
     }
 
     #preceptorNombre {
-      font-size: 22px;
+      font-size: 20px;
       color: #e50914;
       font-weight: bold;
       text-transform: uppercase;
@@ -157,7 +130,6 @@
       right: 20px;
       display: flex;
       gap: 20px;
-      align-items: center;
     }
 
     .top-buttons div {
@@ -168,7 +140,7 @@
     }
 
     .top-buttons i {
-      font-size: 24px;
+      font-size: 22px;
       transition: transform 0.2s ease;
     }
 
@@ -177,36 +149,21 @@
     }
 
     @media (max-width: 768px) {
-      select {
-        width: 100%;
-      }
-
-      table {
-        font-size: 13px;
-      }
-
-      th, td {
-        padding: 10px;
-      }
-
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
       td:last-child {
         display: flex;
         justify-content: center;
         gap: 6px;
       }
 
-      button {
-        font-size: 16px;
-      }
-
-      h1 {
-        font-size: 24px;
-        text-align: center;
-      }
-
       .top-buttons {
         right: 10px;
-        gap: 12px;
+        gap: 14px;
+      }
+
+      .top-buttons i {
+        font-size: 20px;
       }
     }
   </style>
@@ -233,7 +190,7 @@
     <span id="preceptorNombre"></span>
   </div>
 
-  <h1></h1>
+  <h1>fastaApp</h1>
 
   <label for="curso">Seleccioná un curso:</label>
   <select id="curso" onchange="cargarListaCurso(this.value)">

@@ -146,15 +146,12 @@
     <input type="file" id="archivoExcel" accept=".xls,.xlsx" />
 
     <button onclick="subirLista()">Subir Lista</button>
-
-    <div id="estado"></div>
   </div>
 
   <script>
     function subirLista() {
       const curso = document.getElementById("curso").value.trim();
       const archivo = document.getElementById("archivoExcel").files[0];
-      const estado = document.getElementById("estado");
 
       if (!curso || !archivo) {
         Swal.fire({
@@ -178,9 +175,8 @@
           const fila = rows[i];
           const nombre = fila[0]?.toString().trim();
           const dni = fila[1]?.toString().trim();
-
           if (nombre && dni) {
-            alumnosPorDni[dni] = nombre.replace(/,\s*$/, ""); // Quitar coma final
+            alumnosPorDni[dni] = nombre.replace(/,\s*$/, "");
           }
         }
 
@@ -192,10 +188,8 @@
               text: `La lista del curso ${curso} se subió correctamente.`,
               confirmButtonText: 'OK'
             }).then(() => {
-              // Limpiar todo después de subir
               document.getElementById("curso").value = "";
               document.getElementById("archivoExcel").value = "";
-              estado.innerHTML = "";
             });
           })
           .catch(err => {
