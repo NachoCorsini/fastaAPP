@@ -8,6 +8,7 @@ self.addEventListener('install', e => {
           '/consulta.html',
           '/cargadorListas.html',
           '/assetts/logo fasta.png',
+          '/assetts/FASTA.png',
           '/firebase.js',
           '/index.js',
           '/panel.js',
