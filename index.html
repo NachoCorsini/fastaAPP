@@ -1,178 +1,193 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>fastaApp</title>
-  <link rel="manifest" href="manifest.json" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script defer src="index.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fastaApp</title>
+    <link rel="manifest" href="manifest.json" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="index.js"></script>
 
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('Service Worker registrado ✅'))
-        .catch(err => console.log('Error registrando Service Worker ❌', err));
-    }
-  </script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("service-worker.js")
+          .then((reg) => console.log("Service Worker registrado ✅"))
+          .catch((err) =>
+            console.log("Error registrando Service Worker ❌", err)
+          );
+      }
+    </script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: linear-gradient(145deg, #f0f0f0, #ffffff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      padding: 20px;
-    }
-
-    .login-box {
-      background-color: rgba(0, 0, 0, 0.85);
-      padding: 30px 20px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 350px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-
-    .logo-img {
-      width: 70px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 50%;
-      background: white;
-      padding: 5px;
-      position: absolute;
-      top: -35px;
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
-
-    h2, h3, h6 {
-      margin: 10px 0;
-    }
-
-    input {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 90%;
-      max-width: 260px;
-      font-size: 14px;
-      border: none;
-      border-bottom: 1px solid white;
-      background: transparent;
-      color: white;
-    }
-
-    input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    button {
-      background-color: #ed3f47;
-      color: white;
-      border: none;
-      padding: 10px;
-      width: 100%;
-      margin-top: 20px;
-      font-weight: bold;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #ff3d47a1;
-    }
-
-    .consulta-link {
-      margin-top: 30px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.8);
-    }
-
-    .consulta-link p {
-      margin-bottom: 10px;
-    }
-
-    .consulta-link a button {
-      width: auto;
-      margin-top: 5px;
-      background-color: #ffffff;
-      color: #e50914d3;
-      border-radius: 10px;
-      padding: 8px 20px;
-    }
-
-    .consulta-link a button:hover {
-      background-color: #f3c7c7;
-    }
-
-    @media (max-height: 600px) {
       body {
-        align-items: flex-start;
-        padding-top: 40px;
+        margin: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: url("./assetts/FASTA.jpg") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+        position: relative;
       }
-    }
-  </style>
-</head>
-<body>
 
-  <div class="login-box">
-    <img src="./assetts/logo fasta.png" alt="Logo Fasta" class="logo-img">
-    <h6>Nivel Secundario</h6>
-    <h3>Gestión de inasistencias</h3>
-    <input type="text" id="nombre" placeholder="Nombre" />
-    <input type="text" id="apellido" placeholder="Apellido" />
-    <input type="password" id="clave" placeholder="Contraseña" />
-    <button onclick="login()">Ingresar</button>
+      /* Capa blanca semitransparente sobre la imagen */
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-color: rgba(255, 255, 255, 0.711);
+        z-index: 0;
+      }
 
-    <div class="consulta-link">
-      <p>¿ERES ALUMNO O FAMILIAR?</p>
-      <a href="consulta.html">
-        <button>Haz tu consulta aquí</button>
-      </a>
+      .login-box {
+        background-color: rgba(0, 0, 0, 0.85);
+        padding: 30px 20px;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 350px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        position: relative;
+        z-index: 1;
+      }
+
+      .logo-img {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 50%;
+        background: white;
+        padding: 5px;
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      }
+
+      h2,
+      h3,
+      h6 {
+        margin: 10px 0;
+      }
+
+      input {
+        display: block;
+        margin: 10px auto;
+        padding: 10px;
+        width: 90%;
+        max-width: 260px;
+        font-size: 14px;
+        border: none;
+        border-bottom: 1px solid white;
+        background: transparent;
+        color: white;
+      }
+
+      input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      button {
+        background-color: #ed3f47;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        margin-top: 20px;
+        font-weight: bold;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #ff3d47a1;
+      }
+
+      .consulta-link {
+        margin-top: 30px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .consulta-link p {
+        margin-bottom: 10px;
+      }
+
+      .consulta-link a button {
+        width: auto;
+        margin-top: 5px;
+        background-color: #ffffff;
+        color: #e50914d3;
+        border-radius: 10px;
+        padding: 8px 20px;
+      }
+
+      .consulta-link a button:hover {
+        background-color: #f3c7c7;
+      }
+
+      @media (max-height: 600px) {
+        body {
+          align-items: flex-start;
+          padding-top: 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <img src="./assetts/logo fasta.png" alt="Logo Fasta" class="logo-img" />
+      <h6>Nivel Secundario</h6>
+      <h3>Gestión de inasistencias</h3>
+      <input type="text" id="nombre" placeholder="Nombre" />
+      <input type="text" id="apellido" placeholder="Apellido" />
+      <input type="password" id="clave" placeholder="Contraseña" />
+      <button onclick="login()">Ingresar</button>
+
+      <div class="consulta-link">
+        <p>¿ERES ALUMNO O FAMILIAR?</p>
+        <a href="consulta.html">
+          <button>Haz tu consulta aquí</button>
+        </a>
+      </div>
     </div>
-  </div>
 
-  <script>
-    function login() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const apellido = document.getElementById("apellido").value.trim();
-      const clave = document.getElementById("clave").value.trim();
+    <script>
+      function login() {
+        const nombre = document.getElementById("nombre").value.trim();
+        const apellido = document.getElementById("apellido").value.trim();
+        const clave = document.getElementById("clave").value.trim();
 
-      if (!nombre || !apellido || !clave) {
-        Swal.fire({
-          title: "Campos incompletos",
-          text: "Por favor completá todos los campos.",
-          icon: "warning"
-        });
-        return;
+        if (!nombre || !apellido || !clave) {
+          Swal.fire({
+            title: "Campos incompletos",
+            text: "Por favor completá todos los campos.",
+            icon: "warning",
+          });
+          return;
+        }
+
+        if (clave === "*preceptores*") {
+          localStorage.setItem("preceptor", `${nombre} ${apellido}`);
+          window.location.href = "panel.html";
+        } else {
+          Swal.fire({
+            title: "¡Ups!",
+            text: "Solo los preceptores tienen acceso.",
+            icon: "error",
+          });
+        }
       }
-
-      if (clave === "*preceptores*") {
-        localStorage.setItem("preceptor", `${nombre} ${apellido}`);
-        window.location.href = "panel.html";
-      } else {
-        Swal.fire({
-          title: "¡Ups!",
-          text: "Solo los preceptores tienen acceso.",
-          icon: "error"
-        });
-      }
-    }
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>
